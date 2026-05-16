@@ -1,0 +1,113 @@
+plugins {
+	id 'java-library'
+	id 'idea'
+	id 'eclipse'
+	id 'jacoco'
+	id 'maven-publish'
+	id 'org.springframework.boot' version '3.1.6'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+}
+def gradleScriptsDir = "${projectDir}/gradle"
+
+bootJar {
+	enabled = false
+}
+
+jar {
+	enabled = true
+	archiveClassifier = ''
+}
+
+
+apply from: "${gradleScriptsDir}/repositories.gradle"
+apply from: "${gradleScriptsDir}/dependencies.gradle"
+apply from: "${gradleScriptsDir}/jacoco.gradle"
+group = 'com.ulta.dsp'
+
+version = "${version != 'unspecified' ? version : '2.1.144-jdk17'}"
+
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+
+task sourceJar(type: Jar) {
+	from sourceSets.main.allJava
+	archiveClassifier = "sources"
+}
+
+
+publishing {
+	publications {
+		maven(MavenPublication) {
+			groupId = project.group
+			artifactId = project.name
+			version = project.version
+			from components.java
+
+			pom {
+				name = "API-Commons"
+				description = "A java library that contains common functions and attributes to allow for backend communications"
+				url = "http://www.example.com/project"
+				licenses {
+					license {
+						name = "The Apache License, Version 2.0"
+						url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+					}
+				}
+				developers {
+					developer {
+						id = "kjackowski"
+						name = "Keith Jackowski"
+						email = "kjackowski@ulta.com"
+					}
+				}
+				scm {
+					connection = "https://git.ulta.com/scm/dsp/dsp-common-java.git"
+					developerConnection = "https://git.ulta.com/scm/dsp/dsp-common-java.git"
+					url = "https://git.ulta.com/projects/DSP/repos/dsp-common-java/browse/api-commons"
+				}
+			}
+
+		}
+
+
+	}
+	repositories {
+		maven {
+			url = "http://nexus.ulta.com/repository/dsp-common-java/"
+			allowInsecureProtocol = true
+			credentials {
+				username = System.getProperty('user')
+				password = System.getProperty('pass')
+			}
+		}
+	}
+}
+
+
+jar {
+	archiveBaseName.set(project.name)
+
+	manifest {
+		attributes('Implementation-Title': project.name,
+				'Implementation-Version': project.version)
+	}
+}
+
+test {
+	useJUnitPlatform()
+
+	jacoco {
+		destinationFile = file("${layout.buildDirectory.get().asFile}/jacoco/jacocoTest.exec")
+		classDumpDir = file("${layout.buildDirectory.get().asFile}/jacoco/classpathdumps")
+	}
+}
+
+
+tasks.withType(JavaCompile) {
+	options.compilerArgs << "-Xlint:unchecked"
+
+}
+
+
+check.dependsOn jacocoTestReport

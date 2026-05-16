@@ -1,0 +1,22 @@
+
+dependencies {
+    api "org.springframework.boot:spring-boot-starter-webflux"
+    api "org.springframework.boot:spring-boot-starter-validation"
+    api "org.springframework:spring-aspects"
+    api "org.aspectj:aspectjweaver"
+    api "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    api "org.apache.commons:commons-lang3:${commonsLangVersion}"
+    api "io.micrometer:micrometer-core:${coreMicroMeterVersion}"
+    api ("io.grpc:grpc-netty-shaded:${grpcNettyShadedVersion}") {
+        exclude group: "javax.annotation"
+    }
+
+    api ("com.google.cloud:spring-cloud-gcp-logging:${gcpLoggingVersion}") {
+        exclude group: "javax.annotation"
+    }
+    api "com.launchdarkly:launchdarkly-java-server-sdk:${launchDarklyVersion}"
+    api "io.split.client:java-client:4.18.2"
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("io.projectreactor:reactor-test")
+}

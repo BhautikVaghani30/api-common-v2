@@ -1,0 +1,7 @@
+repositories {
+    maven {
+        url "http://nexus.ulta.com/repository/dsp/"
+        allowInsecureProtocol = true
+    }
+    mavenCentral()
+}
